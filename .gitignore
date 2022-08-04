@@ -1,0 +1,6 @@
+.dart_tool/
+.idea/
+build/
+Submission/
+specs/
+app_id.txt
