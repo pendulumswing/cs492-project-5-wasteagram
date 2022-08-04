@@ -2,13 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	// camera permissions
+
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Selecting a photo from within the app</string>  // Message to user
+	<string>Selecting a photo from within the app</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Taking a new photo from within the app</string>
 
-	// location permissions
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Needed to access location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
