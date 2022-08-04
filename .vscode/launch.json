@@ -5,6 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "firebase-example",
+      "type": "dart",
+      "request": "launch",
+      "program": "wasteagram/lib/screens/firebase-example.dart"
+    },
+    {
+      "name": "wastegram (main)",
+      "type": "dart",
+      "request": "launch",
+      "program": "wasteagram/lib/main.dart"
+    },
+    {
       "name": "wasteagram",
       "request": "launch",
       "type": "dart"
