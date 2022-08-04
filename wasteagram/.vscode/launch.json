@@ -8,13 +8,13 @@
       "name": "firebase-example",
       "type": "dart",
       "request": "launch",
-      "program": "wasteagram/lib/screens/firebase-example.dart"
+      "program": "lib/screens/firebase-example.dart"
     },
     {
       "name": "wastegram (main)",
       "type": "dart",
       "request": "launch",
-      "program": "wasteagram/lib/main.dart"
+      "program": "lib/main.dart"
     },
     {
       "name": "wasteagram",
