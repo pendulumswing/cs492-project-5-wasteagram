@@ -4,6 +4,7 @@
 import 'package:flutter/material.dart';
 import '../screens/_screens.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
 import '../models/food_waste_post.dart';
@@ -22,6 +23,19 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   final FoodWastePost postFields = FoodWastePost();
   LocationData? locationData;
   var locationService = Location();
+  bool uploadedDataSuccessful = false;  // To track if post was submitted
+
+  @override
+  void dispose() {
+    super.dispose();
+    if (widget.url != null && !uploadedDataSuccessful) {
+      removePhotoUrl();
+    }
+  }
+
+  void removePhotoUrl() async {
+    await FirebaseStorage.instance.refFromURL(widget.url as String).delete();
+  }
 
   // Retreive location asynchronously.
   // Fetch local data variable before setting state synchronously.
@@ -63,56 +77,64 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
     final WasteListScreenState? wastedListScreen =
         context.findAncestorStateOfType<WasteListScreenState>();
 
-    return Container(
-      padding: const EdgeInsets.all(0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 300,
-            ),
-            child: Image.network(widget.url ?? ''),
-          ),
-          // Text('URL: ${widget.url}'),
-          formContent(context),
-          SizedBox(
-              width: 500,
-              height: 100,
-              child: Container(
-                color: Colors.blueGrey,
-                child: TextButton(
-                  onPressed: () {
-                    if (formKey.currentState!.validate()) {
-                      // First Save state (DTO)
-                      formKey.currentState!.save();
-                      addDateToPostEntryValues();
-
-                      // Save Entry to Database
-                      uploadData();
-
-                      // Reload JournalList Widget
-                      // if (journalList != null) {
-                      //   journalList.loadJournal();
-                      // }
-
-                      // Go back to prior page...
-                      if (!mounted) return;
-                      Navigator.of(context)
-                          .popAndPushNamed(WasteListScreen.route);
-                    }
-                    // uploadData();
-                    // if (!mounted) return;
-                    // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    //   return const WasteListScreen();
-                    // }));
-                  },
-                  child: const Icon(Icons.cloud_upload),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('New Post'),
+        ),
+        body: Container(
+          padding: const EdgeInsets.all(0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 300,
                 ),
-              ))
-        ],
-      ),
-    );
+                child: Image.network(widget.url ?? ''),
+              ),
+              formContent(context),
+            ],
+          ),
+        ),
+        resizeToAvoidBottomInset: false,
+        bottomNavigationBar: SizedBox(
+          width: 500,
+          height: 100,
+          child: Container(
+            color: Colors.blueGrey,
+            child: TextButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  // First Save state (DTO)
+                  formKey.currentState!.save();
+                  addDateToPostEntryValues();
+
+                  // Save Entry to Database
+                  uploadData();
+
+                  uploadedDataSuccessful = true;
+
+                  // Reload JournalList Widget
+                  // if (journalList != null) {
+                  //   journalList.loadJournal();
+                  // }
+
+                  // Go back to prior page...
+                  if (!mounted) return;
+                  // Check if still mounted before setting state
+                  // Navigator.of(context).popAndPushNamed(WasteListScreen.route);
+                  Navigator.of(context).pop();
+                }
+                // uploadData();
+                // if (!mounted) return;
+                // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                //   return const WasteListScreen();
+                // }));
+              },
+              child: const Icon(Icons.cloud_upload),
+            ),
+          ),
+        ));
   }
 
   //--------------------------------------
@@ -123,7 +145,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
       key: formKey,
       child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           child: quantityField(context),
         ),
       ]),
@@ -135,12 +157,16 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   //--------------------------------------
   Widget quantityField(BuildContext context) {
     return TextFormField(
+        textAlign: TextAlign.center,
         autofocus: true,
         decoration: const InputDecoration(
-          labelText: 'Number of Wasted Items',
-          hintStyle: TextStyle(fontSize: 20),
+          hintText: 'Number of Wasted Items',
+          hintStyle: TextStyle(
+            fontSize: 30,
+          ),
         ),
         keyboardType: TextInputType.number,
+        style: const TextStyle(fontSize: 30),
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.digitsOnly
         ],
