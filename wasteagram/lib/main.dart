@@ -3,15 +3,15 @@
 //--------------------------------------
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'app.dart';
 
 void main() async {
   // Bind Widgets to setup framework...
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load SCHEMA from file
-  // var schema = await getSchemaData('assets/schema_1.sql.txt');
+  // Initialize Firebase instance
+  await Firebase.initializeApp();
 
   // Allow responsiveness for these orientations...
   SystemChrome.setPreferredOrientations([
@@ -19,9 +19,6 @@ void main() async {
     DeviceOrientation.landscapeRight,
     DeviceOrientation.portraitUp
   ]);
-
-  // Setup database instance
-  // await DatabaseManager.initialize(schema: schema);
 
   // Run the app...
   runApp(const App(title: 'Wastegram'));
