@@ -5,7 +5,6 @@ import 'package:location/location.dart';
 import 'package:wasteagram/screens/_screens.dart';
 
 class CameraFab extends StatefulWidget {
-
   const CameraFab({Key? key}) : super(key: key);
 
   @override
@@ -23,7 +22,7 @@ class _CameraFabState extends State<CameraFab> {
   //--------------------------------------
   // Pick an image from the gallery and return File from url
   //--------------------------------------
-  Future getImagePath() async {
+  Future getImageFile() async {
     // Get image file
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
@@ -35,7 +34,7 @@ class _CameraFabState extends State<CameraFab> {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
-        final File file = await getImagePath();
+        final File file = await getImageFile();
         if (!mounted) return; // Check if still mounted before setting state
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return NewWasteScreen(file: file);
