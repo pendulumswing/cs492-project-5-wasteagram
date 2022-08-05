@@ -2,20 +2,21 @@
 // MODEL - Food Waste Post
 //--------------------------------------
 class FoodWastePost {
-  final DateTime date;
-  final String photoUrl;
-  final int quantity;
-  final double latitude;
-  final double longitude;
+  DateTime? date = DateTime(2022);
+  String? photoUrl = '';
+  int? quantity = 0;
+  double? latitude = 0;
+  double? longitude = 0;
 
   FoodWastePost({
-    required this.date, 
-    required this.photoUrl,
-    required this.quantity,
-    required this.latitude,
-    required this.longitude,
+    this.date,
+    this.photoUrl,
+    this.quantity,
+    this.latitude,
+    this.longitude,
   });
 
+  // void set date(DateTime value) {date = value;}
 
   factory FoodWastePost.fromJSON(Map<String, dynamic> json) {
     return FoodWastePost(
@@ -38,4 +39,3 @@ class FoodWastePost {
     );
   }
 }
-
