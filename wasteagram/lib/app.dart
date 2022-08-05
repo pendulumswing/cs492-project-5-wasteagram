@@ -17,21 +17,11 @@ class App extends StatefulWidget {
 }
 
 class AppState extends State<App> {
-  // static const IS_DARK = 'isDark';
-  // // static const bool isDark = false;
-
-  // bool get isDark => widget.prefs.getBool(IS_DARK) ?? false;
-
-  // set setIsDark(value) {
-  //   setState(() {
-  //     widget.prefs.setBool(IS_DARK, value);
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
     final routes = {
-      NewWasteScreen.route: (context) => const NewWasteScreen(),
+      NewWasteScreen.route: (context) => NewWasteScreen(),
       WasteDetailScreen.route: (context) => const WasteDetailScreen(),
       WasteListScreen.route: (context) => const WasteListScreen(),
     };
