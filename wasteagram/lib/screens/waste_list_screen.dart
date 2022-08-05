@@ -7,6 +7,7 @@ import '../screens/_screens.dart';
 class WasteListScreen extends StatefulWidget {
   static const route = '/';
   final String title = 'Waste List';
+  final String collection = 'posts-test';
   const WasteListScreen({Key? key}) : super(key: key);
 
   @override
@@ -28,7 +29,7 @@ class WasteListScreenState extends State<WasteListScreen> {
 
   Widget displayContent(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection('posts-test').snapshots(),
+      stream: FirebaseFirestore.instance.collection(widget.collection).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           //--------------------------------------
@@ -76,7 +77,7 @@ class WasteListScreenState extends State<WasteListScreen> {
 
         // 3. Call Database and Delete Entry
         FirebaseFirestore.instance
-            .collection('posts-test')
+            .collection(widget.collection)
             .doc(post.id)
             .delete();
 
