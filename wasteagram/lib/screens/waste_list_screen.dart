@@ -1,13 +1,14 @@
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wasteagram/models/food_waste_post.dart';
+import 'package:wasteagram/services/photo_storage_service.dart';
 import '../widgets/camera_fab.dart';
 import '../screens/_screens.dart';
 
 class WasteListScreen extends StatefulWidget {
   static const route = '/';
   final String title = 'Waste List';
-  final String collection = 'posts-test';
+  final String collection = 'posts';
   const WasteListScreen({Key? key}) : super(key: key);
 
   @override
@@ -15,6 +16,8 @@ class WasteListScreen extends StatefulWidget {
 }
 
 class WasteListScreenState extends State<WasteListScreen> {
+  final PhotoStorageService photoService = PhotoStorageService.getInstance();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,17 +32,20 @@ class WasteListScreenState extends State<WasteListScreen> {
 
   Widget displayContent(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance.collection(widget.collection).snapshots(),
+      stream:
+          FirebaseFirestore.instance.collection(widget.collection).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
+          print("Snapshot: ${snapshot.data?.docs.length}");
           //--------------------------------------
           // Display List of Posts
           //--------------------------------------
           return Column(
             children: [
               Expanded(
+                // child: Text('okay'),
                 child: ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
+                  itemCount: snapshot.data?.docs.length,
                   itemBuilder: (context, index) {
                     return dismissibleTile(context, index, snapshot);
                   },
@@ -61,27 +67,21 @@ class WasteListScreenState extends State<WasteListScreen> {
   // Builds a Waste Tile that can be Deleted
   //--------------------------------------
   Widget dismissibleTile(BuildContext context, index, snapshot) {
-    var post = snapshot.data!.docs[index];
+    FoodWastePost post = FoodWastePost.fromSnapshot(snapshot.data!.docs[index]);
 
     return Dismissible(
       key: UniqueKey(),
       onDismissed: (direction) async {
-        //------------------
-        // DELETE POST
-        //------------------
-        // 1. Get image url to delete image first
-        final String url = post['url'];
+        // 1. Delete image url
+        photoService.deleteImageUsingRefUrl(post.imageUrl);
 
-        // 2. Delete image url
-        await FirebaseStorage.instance.refFromURL(url).delete();
-
-        // 3. Call Database and Delete Entry
+        // 2. Call Database and Delete Entry
         FirebaseFirestore.instance
             .collection(widget.collection)
             .doc(post.id)
             .delete();
 
-        // 4. Update state of Waste Entries
+        // 3. Update state of Waste Entries
         setState(() {});
       },
       // Background decoration
@@ -95,34 +95,23 @@ class WasteListScreenState extends State<WasteListScreen> {
               color: Colors.white,
             ),
           )),
-      child: entryTile(context, index, snapshot),
+      child: entryTile(context, index, post),
     );
   }
 
   //--------------------------------------
   // Builds Individual TILE for Journal List
   //--------------------------------------
-  Widget entryTile(BuildContext context, index, snapshot) {
-    var post = snapshot.data!.docs[index];
-
+  Widget entryTile(BuildContext context, index, post) {
     return GestureDetector(
-      // Handle behavior for different layouts...
-      // If Vertical -> redirects to entry route, otherwise sets index value
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return const WasteDetailScreen();
-          // return const WasteDetailScreen(entry: journal.entries[index]);
+          return WasteDetailScreen(post: post);
         }));
       },
       child: ListTile(
-        // title: Text('Title $index'),
-        title: Text('ID ${post.id}'), // Firebase doucment ID
-        leading: ConstrainedBox(
-          constraints: const BoxConstraints(
-              minWidth: 40, maxWidth: 50, minHeight: 20, maxHeight: 30),
-          child: post['url'] != null ? Image.network(post['url']) : Container(),
-        ),
-        trailing: Text(post['weight'].toString()),
+        title: Text(post.getFormattedDate, style: Theme.of(context).textTheme.headline6), // Firebase doucment ID
+        trailing: Text(post.quantity.toString(), style: Theme.of(context).textTheme.headline4),
       ),
     );
   }
