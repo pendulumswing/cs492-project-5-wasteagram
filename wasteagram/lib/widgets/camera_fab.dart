@@ -1,8 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:location/location.dart';
 import 'package:wasteagram/screens/_screens.dart';
+import 'package:wasteagram/services/photo_storage_service.dart';
 
 class CameraFab extends StatefulWidget {
   const CameraFab({Key? key}) : super(key: key);
@@ -12,29 +11,13 @@ class CameraFab extends StatefulWidget {
 }
 
 class _CameraFabState extends State<CameraFab> {
-  // Image
-  File? image;
-  final picker = ImagePicker();
-  // Location
-  LocationData? locationData;
-  var locationService = Location();
-
-  //--------------------------------------
-  // Pick an image from the gallery and return File from url
-  //--------------------------------------
-  Future getImageFile() async {
-    // Get image file
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      return File(pickedFile.path);
-    }
-  }
+  final PhotoStorageService photoService = PhotoStorageService.getInstance();
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
-        final File file = await getImageFile();
+        final File file = await photoService.selectImage();
         if (!mounted) return; // Check if still mounted before setting state
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return NewWasteScreen(file: file);
