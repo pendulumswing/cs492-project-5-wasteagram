@@ -24,7 +24,8 @@ class AppState extends State<App> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: widget.title ?? '',
-      theme: ThemeData(primarySwatch: Colors.blueGrey),
+      // theme: ThemeData(primarySwatch: Colors.blueGrey),
+      theme: ThemeData.dark(),
       // theme: isDark ? ThemeData.dark() : ThemeData.light(),
       home: const WasteListScreen(),
     );
