@@ -1,20 +1,17 @@
 //--------------------------------------
-// Form - To Enter values for new Journal Entry
+// Form - To Enter values for new Waste Food Post
 //--------------------------------------
 import 'package:flutter/material.dart';
 import 'package:wasteagram/services/food_waste_post_service.dart';
 import 'package:wasteagram/services/photo_storage_service.dart';
-import '../screens/_screens.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:location/location.dart';
 import 'package:flutter/services.dart';
 import '../models/food_waste_post.dart';
 
 class WastedFoodForm extends StatefulWidget {
   static final GlobalKey formKey = GlobalKey();
-  final String? url;
-  WastedFoodForm({Key? key, this.url}) : super(key: key);
+  final String url;
+
+  const WastedFoodForm({Key? key, required this.url}) : super(key: key);
 
   @override
   State<WastedFoodForm> createState() => _WastedFoodFormState();
@@ -30,7 +27,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   @override
   void dispose() {
     super.dispose();
-    if (widget.url != null && !uploadedDataSuccessful) {
+    if (!uploadedDataSuccessful) {
       photoService.deleteImageFromStorage();
     }
   }
@@ -38,8 +35,8 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   @override
   Widget build(BuildContext context) {
     // Get handle on parent Widget of a certain type...
-    final WasteListScreenState? wastedListScreen =
-        context.findAncestorStateOfType<WasteListScreenState>();
+    // final WasteListScreenState? wastedListScreen =
+    //     context.findAncestorStateOfType<WasteListScreenState>();
 
     return Scaffold(
         appBar: AppBar(
@@ -58,7 +55,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
                 //   widget.url ?? '',
                 // ),
                 child: Image.network(
-                  widget.url ?? '',
+                  widget.url,
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) {
                       return child;
@@ -87,7 +84,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
                   // First Save state (DTO)
                   formKey.currentState!.save();
                   // addDateToPostEntryValues();
-                  newPost.imageUrl = widget.url ?? '';
+                  newPost.imageUrl = widget.url;
 
                   // Save Entry to Database
                   await postService.uploadData(newPost);
@@ -153,65 +150,4 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
           }
         });
   }
-
-  // //--------------------------------------
-  // // Upload Data to Firebase
-  // //--------------------------------------
-  // void uploadData() async {
-  //   final url = widget.url;
-  //   LocationData loc = await retreiveLocation();
-  //   double lat = loc.latitude as double;
-  //   double long = loc.longitude as double;
-  //   final weight = DateTime.now().millisecondsSinceEpoch % 1000;
-  //   final title = 'Title $weight';
-  //   FirebaseFirestore.instance.collection('posts-test').add({
-  //     'weight': weight,
-  //     'title': title,
-  //     'url': url,
-  //     'latitude': lat,
-  //     'longitude': long,
-  //   });
-  // }
-
-  // //--------------------------------------
-  // // Build SAVE Button (Submit Form)
-  // //--------------------------------------
-  // Widget saveButton(BuildContext context) {
-  //   // Get handle on parent Widget of a certain type...
-  //   final JournalEntryListScreenState? journalList =
-  //       context.findAncestorStateOfType<JournalEntryListScreenState>();
-
-  //   return Padding(
-  //     padding: const EdgeInsets.all(5),
-  //     child: ElevatedButton(
-  //       style: ElevatedButton.styleFrom(
-  //         minimumSize: const Size(100, 40),
-  //       ),
-  //       onPressed: () async {
-  //         if (formKey.currentState!.validate()) {
-  //           // First Save state (DTO)
-  //           formKey.currentState!.save();
-  //           addDateToJournalEntryValues();
-
-  //           // Save Entry to Database
-  //           final databaseManager = DatabaseManager.getInstance();
-  //           databaseManager.saveJournalEntry(dto: journalEntryFields);
-
-  //           // Reload JournalList Widget
-  //           if (journalList != null) {
-  //             journalList.loadJournal();
-  //           }
-
-  //           // Go back to prior page...
-  //           Navigator.of(context).popAndPushNamed(JournalEntryListScreen.route);
-  //         }
-  //       },
-  //       child: const Text('Save'),
-  //     ),
-  //   );
-  // }
-
-  // void addDateToPostEntryValues() {
-  //   postFields.date = DateTime.now();
-  // }
 }
