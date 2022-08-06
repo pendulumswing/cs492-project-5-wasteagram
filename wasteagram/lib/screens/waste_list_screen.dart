@@ -38,6 +38,17 @@ class WasteListScreenState extends State<WasteListScreen> {
             sum += doc['quantity'] as int;
           });
 
+
+
+          //--------------------------------------
+          // Sort list so most recent post shows at the top
+          //--------------------------------------
+          data.sort(
+            (b, a) {
+                return (DateTime.parse(a['date'])).compareTo(DateTime.parse(b['date']));
+            },
+          );
+
           //--------------------------------------
           // Display List of Posts
           //--------------------------------------
@@ -50,9 +61,11 @@ class WasteListScreenState extends State<WasteListScreen> {
                 Expanded(
                   // child: Text('okay'),
                   child: ListView.builder(
-                    itemCount: snapshot.data?.docs.length,
+                    // itemCount: snapshot.data?.docs.length,
+                    itemCount: data.length,
                     itemBuilder: (context, index) {
-                      return dismissibleTile(context, index, snapshot);
+                      // return dismissibleTile(context, index, snapshot);
+                      return dismissibleTile(context, index, data);
                     },
                   ),
                 ),
@@ -83,8 +96,9 @@ class WasteListScreenState extends State<WasteListScreen> {
   //--------------------------------------
   // Builds a Waste Tile that can be Deleted
   //--------------------------------------
-  Widget dismissibleTile(BuildContext context, index, snapshot) {
-    FoodWastePost post = FoodWastePost.fromSnapshot(snapshot.data!.docs[index]);
+  Widget dismissibleTile(BuildContext context, index, data) {
+    // FoodWastePost post = FoodWastePost.fromSnapshot(snapshot.data!.docs[index]);
+    FoodWastePost post = FoodWastePost.fromList(data[index]);
 
     return Dismissible(
       key: UniqueKey(),

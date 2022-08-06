@@ -2,6 +2,8 @@
 // MODEL - Food Waste Post
 //--------------------------------------
 import 'package:intl/intl.dart';
+import 'dart:math';
+import 'dart:convert';
 
 class FoodWastePost {
   String id = '';
@@ -36,6 +38,20 @@ class FoodWastePost {
   factory FoodWastePost.fromSnapshot(map) {
     return FoodWastePost(
       id: map.id,
+      date: DateTime.parse(map['date']),
+      imageUrl: map['imageUrl'],
+      quantity: map['quantity'],
+      latitude: map['latitude'],
+      longitude: map['longitude'],
+    );
+  }
+
+  //--------------------------------------
+  // Create FoodWastePost object from Snapshot
+  //--------------------------------------
+  factory FoodWastePost.fromList(map) {
+    return FoodWastePost(
+      // id: map['id'],
       date: DateTime.parse(map['date']),
       imageUrl: map['imageUrl'],
       quantity: map['quantity'],
