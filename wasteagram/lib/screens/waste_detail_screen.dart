@@ -13,15 +13,23 @@ class WasteDetailScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Wasteagram'),
       ),
-      body: Container(
-        padding: const EdgeInsets.all(0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(post.getFormattedDateShort,
-                style: Theme.of(context).textTheme.headline4),
-            Image.network(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          //------------------
+          // Date
+          //------------------
+          Text(post.getFormattedDateShort,
+              style: Theme.of(context).textTheme.headline4),
+
+          //------------------
+          // Image
+          //------------------
+          SizedBox(
+            height: 300,
+            width: 800,
+            child: Image.network(
               post.imageUrl,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) {
@@ -31,20 +39,27 @@ class WasteDetailScreen extends StatelessWidget {
                     width: 800,
                     height: 300,
                     child: Center(child: CircularProgressIndicator()),
-                    // child: Center(child: LinearProgressIndicator()),
                   );
                 }
               },
             ),
-            Text(post.quantity.toString(),
-                style: Theme.of(context).textTheme.headline4),
-            Text(
-              'Location: \n(${post.latitude}, ${post.longitude})',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
+          ),
+
+          //------------------
+          // Quantity
+          //------------------
+          Text(post.quantity.toString(),
+              style: Theme.of(context).textTheme.headline4),
+
+          //------------------
+          // Location (GPS Coordinates)
+          //------------------
+          Text(
+            'Location: \n(${post.latitude}, ${post.longitude})',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ],
       ),
     );
   }
