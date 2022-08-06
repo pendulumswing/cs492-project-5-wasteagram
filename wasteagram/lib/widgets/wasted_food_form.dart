@@ -2,6 +2,8 @@
 // Form - To Enter values for new Journal Entry
 //--------------------------------------
 import 'package:flutter/material.dart';
+import 'package:wasteagram/services/food_waste_post_service.dart';
+import 'package:wasteagram/services/photo_storage_service.dart';
 import '../screens/_screens.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -20,55 +22,17 @@ class WastedFoodForm extends StatefulWidget {
 
 class _WastedFoodFormState extends State<WastedFoodForm> {
   final formKey = GlobalKey<FormState>();
-  final FoodWastePost postFields = FoodWastePost();
-  LocationData? locationData;
-  var locationService = Location();
-  bool uploadedDataSuccessful = false;  // To track if post was submitted
+  bool uploadedDataSuccessful = false; // To track if post was submitted
+  PhotoStorageService photoService = PhotoStorageService.getInstance();
+  FoodWastePostService postService = FoodWastePostService.getInstance();
+  final FoodWastePost newPost = FoodWastePost();
 
   @override
   void dispose() {
     super.dispose();
     if (widget.url != null && !uploadedDataSuccessful) {
-      removePhotoUrl();
+      photoService.deleteImageFromStorage();
     }
-  }
-
-  void removePhotoUrl() async {
-    await FirebaseStorage.instance.refFromURL(widget.url as String).delete();
-  }
-
-  // Retreive location asynchronously.
-  // Fetch local data variable before setting state synchronously.
-  Future retreiveLocation() async {
-    // Check if Location Permissions are set, then handle
-    try {
-      var serviceEnabled = await locationService.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await locationService.requestService();
-        if (!serviceEnabled) {
-          print('Failed to enable service. Returning.');
-          return;
-        }
-      }
-
-      var permissionGranted = await locationService.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await locationService.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          print('Location service permission not granted. Returning.');
-        }
-      }
-
-      locationData = await locationService.getLocation();
-    } on PlatformException catch (e) {
-      print('Error: ${e.toString()}, code: ${e.code}');
-      locationData = null;
-    }
-
-    // Fetch Location Data
-    locationData = await locationService.getLocation();
-    return locationData;
-    // setState(() {});
   }
 
   @override
@@ -79,7 +43,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('New Post'),
+          title: const Text('New Post'),
         ),
         body: Container(
           padding: const EdgeInsets.all(0),
@@ -90,7 +54,22 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
                 constraints: const BoxConstraints(
                   maxHeight: 300,
                 ),
-                child: Image.network(widget.url ?? ''),
+                // child: Image.network(
+                //   widget.url ?? '',
+                // ),
+                child: Image.network(
+                  widget.url ?? '',
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return const SizedBox(
+                        height: 300,
+                        child: Center(child: CircularProgressIndicator()),
+                      );
+                    }
+                  },
+                ),
               ),
               formContent(context),
             ],
@@ -103,21 +82,17 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
           child: Container(
             color: Colors.blueGrey,
             child: TextButton(
-              onPressed: () {
+              onPressed: () async {
                 if (formKey.currentState!.validate()) {
                   // First Save state (DTO)
                   formKey.currentState!.save();
-                  addDateToPostEntryValues();
+                  // addDateToPostEntryValues();
+                  newPost.imageUrl = widget.url ?? '';
 
                   // Save Entry to Database
-                  uploadData();
+                  await postService.uploadData(newPost);
 
                   uploadedDataSuccessful = true;
-
-                  // Reload JournalList Widget
-                  // if (journalList != null) {
-                  //   journalList.loadJournal();
-                  // }
 
                   // Go back to prior page...
                   if (!mounted) return;
@@ -125,11 +100,6 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
                   // Navigator.of(context).popAndPushNamed(WasteListScreen.route);
                   Navigator.of(context).pop();
                 }
-                // uploadData();
-                // if (!mounted) return;
-                // Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                //   return const WasteListScreen();
-                // }));
               },
               child: const Icon(Icons.cloud_upload),
             ),
@@ -158,7 +128,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   Widget quantityField(BuildContext context) {
     return TextFormField(
         textAlign: TextAlign.center,
-        autofocus: true,
+        // autofocus: true,
         decoration: const InputDecoration(
           hintText: 'Number of Wasted Items',
           hintStyle: TextStyle(
@@ -171,7 +141,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
           FilteringTextInputFormatter.digitsOnly
         ],
         onSaved: (value) {
-          postFields.quantity = int.parse(value ?? '');
+          newPost.quantity = int.parse(value ?? '-1');
         },
         validator: (value) {
           if (value!.isEmpty) {
@@ -184,24 +154,24 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
         });
   }
 
-  //--------------------------------------
-  // Upload Data to Firebase
-  //--------------------------------------
-  void uploadData() async {
-    final url = widget.url;
-    LocationData loc = await retreiveLocation();
-    double lat = loc.latitude as double;
-    double long = loc.longitude as double;
-    final weight = DateTime.now().millisecondsSinceEpoch % 1000;
-    final title = 'Title $weight';
-    FirebaseFirestore.instance.collection('posts-test').add({
-      'weight': weight,
-      'title': title,
-      'url': url,
-      'latitude': lat,
-      'longitude': long,
-    });
-  }
+  // //--------------------------------------
+  // // Upload Data to Firebase
+  // //--------------------------------------
+  // void uploadData() async {
+  //   final url = widget.url;
+  //   LocationData loc = await retreiveLocation();
+  //   double lat = loc.latitude as double;
+  //   double long = loc.longitude as double;
+  //   final weight = DateTime.now().millisecondsSinceEpoch % 1000;
+  //   final title = 'Title $weight';
+  //   FirebaseFirestore.instance.collection('posts-test').add({
+  //     'weight': weight,
+  //     'title': title,
+  //     'url': url,
+  //     'latitude': lat,
+  //     'longitude': long,
+  //   });
+  // }
 
   // //--------------------------------------
   // // Build SAVE Button (Submit Form)
@@ -241,7 +211,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   //   );
   // }
 
-  void addDateToPostEntryValues() {
-    postFields.date = DateTime.now();
-  }
+  // void addDateToPostEntryValues() {
+  //   postFields.date = DateTime.now();
+  // }
 }
