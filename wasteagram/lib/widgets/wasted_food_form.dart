@@ -132,17 +132,18 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
   Widget quantityField(BuildContext context) {
     return TextFormField(
         textAlign: TextAlign.center,
-        // autofocus: true,
+        autofocus: true,
         decoration: const InputDecoration(
           hintText: 'Number of Wasted Items',
           hintStyle: TextStyle(
             fontSize: 30,
           ),
         ),
+        textInputAction: TextInputAction.done,
         keyboardType: TextInputType.number,
         style: const TextStyle(fontSize: 30),
         inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.digitsOnly
+          FilteringTextInputFormatter.digitsOnly,
         ],
         onSaved: (value) {
           newPost.quantity = int.parse(value ?? '-1');
