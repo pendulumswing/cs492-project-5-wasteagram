@@ -69,7 +69,7 @@ class FoodWastePostService {
       if (!serviceEnabled) {
         serviceEnabled = await locationService.requestService();
         if (!serviceEnabled) {
-          print('Failed to enable service. Returning.');
+          // print('Failed to enable service. Returning.');
           return;
         }
       }
@@ -78,12 +78,13 @@ class FoodWastePostService {
       if (permissionGranted == PermissionStatus.denied) {
         permissionGranted = await locationService.requestPermission();
         if (permissionGranted != PermissionStatus.granted) {
-          print('Location service permission not granted. Returning.');
+          // print('Location service permission not granted. Returning.');
         }
       }
 
       locationData = await locationService.getLocation();
     } on PlatformException catch (e) {
+      // ignore: avoid_print
       print('Error: ${e.toString()}, code: ${e.code}');
       locationData = null;
     }
