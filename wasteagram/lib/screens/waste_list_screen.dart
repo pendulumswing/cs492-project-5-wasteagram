@@ -36,7 +36,6 @@ class WasteListScreenState extends State<WasteListScreen> {
           FirebaseFirestore.instance.collection(widget.collection).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-          print("Snapshot: ${snapshot.data?.docs.length}");
           //--------------------------------------
           // Display List of Posts
           //--------------------------------------
