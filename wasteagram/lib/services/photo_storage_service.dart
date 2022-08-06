@@ -49,7 +49,6 @@ class PhotoStorageService {
     }
   }
 
-
   //--------------------------------------
   // Pick an image from the gallery and return File
   //--------------------------------------
@@ -88,7 +87,12 @@ class PhotoStorageService {
   void deleteImageFromStorage() async {
     await Future.delayed(const Duration(seconds: 10));
     if (refUrl.isNotEmpty) {
-      await FirebaseStorage.instance.refFromURL(refUrl).delete();
+      try {
+        await FirebaseStorage.instance.refFromURL(refUrl).delete();
+      } catch (e) {
+        // ignore: avoid_print
+        print(e);
+      }
     }
   }
 
@@ -97,10 +101,14 @@ class PhotoStorageService {
   //--------------------------------------
   void deleteImageUsingRefUrl(String url) async {
     if (url.isNotEmpty) {
-      await FirebaseStorage.instance.refFromURL(url).delete();
+      try {
+        await FirebaseStorage.instance.refFromURL(url).delete();
+      } catch (e) {
+        // ignore: avoid_print
+        print(e);
+      }
     }
   }
-
 
   //--------------------------------------
   // Reset currently selected image data
