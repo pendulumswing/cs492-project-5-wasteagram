@@ -4,6 +4,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:wasteagram/services/food_waste_post_service.dart';
+import 'services/photo_storage_service.dart';
 import 'app.dart';
 
 void main() async {
@@ -12,6 +14,8 @@ void main() async {
 
   // Initialize Firebase instance
   await Firebase.initializeApp();
+  await PhotoStorageService.initialize();
+  await FoodWastePostService.initialize();
 
   // Allow responsiveness for these orientations...
   SystemChrome.setPreferredOrientations([
