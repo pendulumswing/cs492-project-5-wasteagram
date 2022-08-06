@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wasteagram/models/food_waste_post.dart';
-import 'package:wasteagram/services/photo_storage_service.dart';
+import '../services/photo_storage_service.dart';
 import '../widgets/camera_fab.dart';
 import '../screens/_screens.dart';
+import '../models/food_waste_post_list.dart';
 
 class WasteListScreen extends StatefulWidget {
   static const route = '/';
@@ -23,6 +23,9 @@ class WasteListScreenState extends State<WasteListScreen> {
     return displayContent(context);
   }
 
+  //--------------------------------------
+  // Stream Builder Display - Updates as data changes
+  //--------------------------------------
   Widget displayContent(BuildContext context) {
     return StreamBuilder(
       stream:
@@ -30,24 +33,15 @@ class WasteListScreenState extends State<WasteListScreen> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           //--------------------------------------
-          // Get sum total of wasted food (Extra Credit)
+          // Convert snapshot to FoodWastePost List
           //--------------------------------------
-          int sum = 0;
-          List<dynamic> data = snapshot.data!.docs.toList();
-          data.forEach((doc) {
-            sum += doc['quantity'] as int;
-          });
-
-
+          FoodWastePostList data = FoodWastePostList.fromSnapshot(snapshot);
+          data.sort();
 
           //--------------------------------------
-          // Sort list so most recent post shows at the top
+          // EXTRA CREDIT - Get sum total of wasted food 
           //--------------------------------------
-          data.sort(
-            (b, a) {
-                return (DateTime.parse(a['date'])).compareTo(DateTime.parse(b['date']));
-            },
-          );
+          int sum = data.totalWaste;
 
           //--------------------------------------
           // Display List of Posts
@@ -62,10 +56,11 @@ class WasteListScreenState extends State<WasteListScreen> {
                   // child: Text('okay'),
                   child: ListView.builder(
                     // itemCount: snapshot.data?.docs.length,
-                    itemCount: data.length,
+                    itemCount: data.posts.length,
                     itemBuilder: (context, index) {
                       // return dismissibleTile(context, index, snapshot);
-                      return dismissibleTile(context, index, data);
+                      // return dismissibleTile(context, index, data);
+                      return dismissibleTile(context, data.posts[index]);
                     },
                   ),
                 ),
@@ -96,9 +91,8 @@ class WasteListScreenState extends State<WasteListScreen> {
   //--------------------------------------
   // Builds a Waste Tile that can be Deleted
   //--------------------------------------
-  Widget dismissibleTile(BuildContext context, index, data) {
-    // FoodWastePost post = FoodWastePost.fromSnapshot(snapshot.data!.docs[index]);
-    FoodWastePost post = FoodWastePost.fromList(data[index]);
+  // Widget dismissibleTile(BuildContext context, index, data) {
+  Widget dismissibleTile(BuildContext context, post) {
 
     return Dismissible(
       key: UniqueKey(),
@@ -126,14 +120,15 @@ class WasteListScreenState extends State<WasteListScreen> {
               color: Colors.white,
             ),
           )),
-      child: entryTile(context, index, post),
+      // child: entryTile(context, index, post),
+      child: entryTile(context, post),
     );
   }
 
   //--------------------------------------
   // Builds Individual TILE for Journal List
   //--------------------------------------
-  Widget entryTile(BuildContext context, index, post) {
+  Widget entryTile(BuildContext context, post) {
     return GestureDetector(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
