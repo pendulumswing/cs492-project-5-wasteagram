@@ -5,6 +5,12 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "wasteagram_test",
+      "type": "dart",
+      "request": "launch",
+      "program": "test/wasteagram_test.dart"
+    },
+    {
       "name": "firebase-example",
       "type": "dart",
       "request": "launch",
