@@ -48,7 +48,7 @@ class WasteDetailScreen extends StatelessWidget {
           //------------------
           // Quantity
           //------------------
-          Text(post.quantity.toString(),
+          Text("${post.quantity.toString()} ${post.quantity > 1 ? 'items' : 'item'}",
               style: Theme.of(context).textTheme.headline4),
 
           //------------------
