@@ -14,7 +14,7 @@ class FoodWastePostList {
   FoodWastePostList.fromSnapshot(snapshot) {
     List<dynamic> sdata = snapshot.data!.docs.toList();
     sdata.asMap().forEach((index, item) {
-      FoodWastePost post = FoodWastePost.fromList(item);
+      FoodWastePost post = FoodWastePost.fromMapNoId(item);
       post.id = sdata[index].id;
       posts.add(post);
     });
@@ -43,9 +43,9 @@ class FoodWastePostList {
   //------------------
   int get totalWaste {
     int sum = 0;
-    posts.forEach((post) {
+    for (var post in posts) {
       sum += post.quantity;
-    });
+    }
     return sum;
   }
 }
