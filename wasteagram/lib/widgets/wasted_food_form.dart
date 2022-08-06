@@ -87,7 +87,8 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
                   newPost.imageUrl = widget.url;
 
                   // Save Entry to Database
-                  await postService.uploadData(newPost);
+                  // await postService.uploadData(newPost);
+                  postService.uploadData(newPost);
 
                   uploadedDataSuccessful = true;
 
@@ -98,7 +99,7 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
                   Navigator.of(context).pop();
                 }
               },
-              child: const Icon(Icons.cloud_upload),
+              child: const Icon(Icons.cloud_upload, color: Colors.white, size: 80,),
             ),
           ),
         ));

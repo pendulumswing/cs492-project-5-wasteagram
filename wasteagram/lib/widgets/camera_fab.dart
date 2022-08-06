@@ -23,7 +23,7 @@ class _CameraFabState extends State<CameraFab> {
           return NewWasteScreen(file: file);
         }));
       },
-      backgroundColor: Colors.blueGrey,
+      // backgroundColor: Colors.blueGrey,
       child: const Icon(Icons.camera_alt_rounded),
     );
   }
