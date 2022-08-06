@@ -15,16 +15,21 @@ class _CameraFabState extends State<CameraFab> {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
-      onPressed: () async {
-        final File file = await photoService.selectImage();
-        if (!mounted) return; // Check if still mounted before setting state
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return NewWasteScreen(file: file);
-        }));
-      },
-      // backgroundColor: Colors.blueGrey,
-      child: const Icon(Icons.camera_alt_rounded),
+    return Semantics(
+      button: true,
+      enabled: true,
+      onTapHint: 'Take a Photo or Select one from the Gallery',
+      child: FloatingActionButton(
+        onPressed: () async {
+          final File file = await photoService.selectImage();
+          if (!mounted) return; // Check if still mounted before setting state
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return NewWasteScreen(file: file);
+          }));
+        },
+        // backgroundColor: Colors.blueGrey,
+        child: const Icon(Icons.camera_alt_rounded),
+      ),
     );
   }
 }
