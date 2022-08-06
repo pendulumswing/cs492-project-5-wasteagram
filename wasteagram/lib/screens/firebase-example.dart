@@ -78,7 +78,6 @@ class CameraScreenState extends State<CameraScreen> {
 
       // <-- Get back the url where the file is stored
       final url = await storageReference.getDownloadURL();
-      print(url);
       return url;
     }
   }
