@@ -20,18 +20,13 @@ class AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    final routes = {
-      NewWasteScreen.route: (context) => NewWasteScreen(),
-      WasteDetailScreen.route: (context) => const WasteDetailScreen(),
-      WasteListScreen.route: (context) => const WasteListScreen(),
-    };
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: widget.title ?? '',
-      // theme: ThemeData(primarySwatch: Colors.blueGrey),
+      theme: ThemeData(primarySwatch: Colors.blueGrey),
       // theme: isDark ? ThemeData.dark() : ThemeData.light(),
-      routes: routes,
+      home: const WasteListScreen(),
     );
   }
 }
