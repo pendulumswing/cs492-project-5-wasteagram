@@ -7,7 +7,7 @@ import '../screens/_screens.dart';
 
 class WasteListScreen extends StatefulWidget {
   static const route = '/';
-  final String title = 'Waste List';
+  final String title = 'Wasteagram';
   final String collection = 'posts';
   const WasteListScreen({Key? key}) : super(key: key);
 
@@ -20,14 +20,7 @@ class WasteListScreenState extends State<WasteListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: displayContent(context),
-      floatingActionButton: const CameraFab(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    );
+    return displayContent(context);
   }
 
   Widget displayContent(BuildContext context) {
@@ -37,26 +30,51 @@ class WasteListScreenState extends State<WasteListScreen> {
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
           //--------------------------------------
+          // Get sum total of wasted food (Extra Credit)
+          //--------------------------------------
+          int sum = 0;
+          List<dynamic> data = snapshot.data!.docs.toList();
+          data.forEach((doc) {
+            sum += doc['quantity'] as int;
+          });
+
+          //--------------------------------------
           // Display List of Posts
           //--------------------------------------
-          return Column(
-            children: [
-              Expanded(
-                // child: Text('okay'),
-                child: ListView.builder(
-                  itemCount: snapshot.data?.docs.length,
-                  itemBuilder: (context, index) {
-                    return dismissibleTile(context, index, snapshot);
-                  },
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('${widget.title} - $sum'),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  // child: Text('okay'),
+                  child: ListView.builder(
+                    itemCount: snapshot.data?.docs.length,
+                    itemBuilder: (context, index) {
+                      return dismissibleTile(context, index, snapshot);
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
+            floatingActionButton: const CameraFab(),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
           );
         } else {
           //--------------------------------------
           // Display Circular Progress Indicator and button to select photo for upload
           //--------------------------------------
-          return const Center(child: CircularProgressIndicator());
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('${widget.title} - 0'),
+            ),
+            body: const Center(child: CircularProgressIndicator()),
+            floatingActionButton: const CameraFab(),
+            floatingActionButtonLocation:
+                FloatingActionButtonLocation.centerFloat,
+          );
         }
       },
     );
@@ -109,8 +127,11 @@ class WasteListScreenState extends State<WasteListScreen> {
         }));
       },
       child: ListTile(
-        title: Text(post.getFormattedDate, style: Theme.of(context).textTheme.headline6), // Firebase doucment ID
-        trailing: Text(post.quantity.toString(), style: Theme.of(context).textTheme.headline4),
+        title: Text(post.getFormattedDate,
+            style:
+                Theme.of(context).textTheme.headline6), // Firebase doucment ID
+        trailing: Text(post.quantity.toString(),
+            style: Theme.of(context).textTheme.headline4),
       ),
     );
   }
