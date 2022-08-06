@@ -94,34 +94,40 @@ class WasteListScreenState extends State<WasteListScreen> {
   // Widget dismissibleTile(BuildContext context, index, data) {
   Widget dismissibleTile(BuildContext context, post) {
 
-    return Dismissible(
-      key: UniqueKey(),
-      onDismissed: (direction) async {
-        // 1. Delete image url
-        photoService.deleteImageUsingRefUrl(post.imageUrl);
-
-        // 2. Call Database and Delete Entry
-        FirebaseFirestore.instance
-            .collection(widget.collection)
-            .doc(post.id)
-            .delete();
-
-        // 3. Update state of Waste Entries
-        setState(() {});
-      },
-      // Background decoration
-      background: Container(
-          color: Colors.red,
-          alignment: AlignmentDirectional.centerEnd,
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Icon(
-              Icons.delete,
-              color: Colors.white,
-            ),
-          )),
-      // child: entryTile(context, index, post),
-      child: entryTile(context, post),
+    return Semantics(
+      label: 'Dismissable Tile',
+      button: false,
+      enabled: true,
+      onTapHint: 'Slide left or right to delete post',
+      child: Dismissible(
+        key: UniqueKey(),
+        onDismissed: (direction) async {
+          // 1. Delete image url
+          photoService.deleteImageUsingRefUrl(post.imageUrl);
+    
+          // 2. Call Database and Delete Entry
+          FirebaseFirestore.instance
+              .collection(widget.collection)
+              .doc(post.id)
+              .delete();
+    
+          // 3. Update state of Waste Entries
+          setState(() {});
+        },
+        // Background decoration
+        background: Container(
+            color: Colors.red,
+            alignment: AlignmentDirectional.centerEnd,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            )),
+        // child: entryTile(context, index, post),
+        child: entryTile(context, post),
+      ),
     );
   }
 
@@ -129,18 +135,24 @@ class WasteListScreenState extends State<WasteListScreen> {
   // Builds Individual TILE for Journal List
   //--------------------------------------
   Widget entryTile(BuildContext context, post) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return WasteDetailScreen(post: post);
-        }));
-      },
-      child: ListTile(
-        title: Text(post.getFormattedDate,
-            style:
-                Theme.of(context).textTheme.headline6), // Firebase doucment ID
-        trailing: Text(post.quantity.toString(),
-            style: Theme.of(context).textTheme.headline4),
+    return Semantics(
+      label: 'Post Tile',
+      button: false,
+      enabled: true,
+      onTapHint: 'Tap to see post details',
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return WasteDetailScreen(post: post);
+          }));
+        },
+        child: ListTile(
+          title: Text(post.getFormattedDate,
+              style:
+                  Theme.of(context).textTheme.headline6), // Firebase doucment ID
+          trailing: Text(post.quantity.toString(),
+              style: Theme.of(context).textTheme.headline4),
+        ),
       ),
     );
   }

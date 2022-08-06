@@ -78,28 +78,34 @@ class _WastedFoodFormState extends State<WastedFoodForm> {
           height: 100,
           child: Container(
             color: Colors.blueGrey,
-            child: TextButton(
-              onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  // First Save state (DTO)
-                  formKey.currentState!.save();
-                  // addDateToPostEntryValues();
-                  newPost.imageUrl = widget.url;
-
-                  // Save Entry to Database
-                  // await postService.uploadData(newPost);
-                  postService.uploadData(newPost);
-
-                  uploadedDataSuccessful = true;
-
-                  // Go back to prior page...
-                  if (!mounted) return;
-                  // Check if still mounted before setting state
-                  // Navigator.of(context).popAndPushNamed(WasteListScreen.route);
-                  Navigator.of(context).pop();
-                }
-              },
-              child: const Icon(Icons.cloud_upload, color: Colors.white, size: 80,),
+            child: Semantics(
+              label: 'Upload Post Button',
+              button: true,
+              enabled: true,
+              onTapHint: 'Upload Post',
+              child: TextButton(
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    // First Save state (DTO)
+                    formKey.currentState!.save();
+                    // addDateToPostEntryValues();
+                    newPost.imageUrl = widget.url;
+            
+                    // Save Entry to Database
+                    // await postService.uploadData(newPost);
+                    postService.uploadData(newPost);
+            
+                    uploadedDataSuccessful = true;
+            
+                    // Go back to prior page...
+                    if (!mounted) return;
+                    // Check if still mounted before setting state
+                    // Navigator.of(context).popAndPushNamed(WasteListScreen.route);
+                    Navigator.of(context).pop();
+                  }
+                },
+                child: const Icon(Icons.cloud_upload, color: Colors.white, size: 80,),
+              ),
             ),
           ),
         ));

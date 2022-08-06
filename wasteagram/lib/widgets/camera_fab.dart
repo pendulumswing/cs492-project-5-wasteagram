@@ -16,6 +16,7 @@ class _CameraFabState extends State<CameraFab> {
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      label: 'Take Photo Button',
       button: true,
       enabled: true,
       onTapHint: 'Take a Photo or Select one from the Gallery',
